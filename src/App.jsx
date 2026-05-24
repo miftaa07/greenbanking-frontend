@@ -4,6 +4,9 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import LandingPage from './pages/LandingPage'
 import AdminPage from './pages/AdminPage'
+import PesanMasuk from './components/admin/PesanMasuk'
+import PesanDibalas from './components/admin/PesanDibalas'
+
 
 function App() {
   return (
@@ -14,7 +17,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/pesan-masuk" element={<AdminPage />} />
+          <Route path="/pesan-masuk" element={<PesanMasuk />} />
+          <Route path="/pesan-dibalas" element={<PesanDibalas />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

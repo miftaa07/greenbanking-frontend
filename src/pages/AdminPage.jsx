@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Menu, MessageSquare, BookOpen, MessageSquareReply, Users } from 'lucide-react'
 import AdminSidebar from '../components/admin/AdminSidebar'
 import StatCard from '../components/admin/StatCard'
 import ActivityList from '../components/admin/ActivityList'
 import PesanMasuk from '../components/admin/PesanMasuk'
+import PesanDibalas from '../components/admin/PesanDibalas'
 
 const stats = [
   { id: 1, icon: MessageSquare,       value: '4',     label: 'Total Pesan Masuk' },
@@ -13,8 +15,19 @@ const stats = [
 ]
 
 export default function AdminPage() {
-  const [activeMenu, setActiveMenu] = useState('pesan-masuk') // Set Pesan Masuk as default active menu
+  const [activeMenu, setActiveMenu] = useState('dashboard') // Set Dashboard as default active menu
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
+  
+  // Prevent body scroll when logout modal is open
+  useEffect(() => {
+    if (showLogoutModal) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [showLogoutModal])
   
   // Dummy messages state to handle interactive read status
   const [messages, setMessages] = useState([
@@ -25,7 +38,8 @@ export default function AdminPage() {
       email: "ahmad.santosos@univ.ac.id",
       message: "Saya tertarik untuk berkolaborasi dalam penelitian serupa. Apakah data penelitian ini bisa diakses untuk tujuan akademik?",
       date: "2024-03-25 10:30",
-      unread: true
+      replied: true,
+      replyMessage: "Terima kasih atas pertanyaannya..."
     },
     {
       id: 2,
@@ -71,7 +85,15 @@ export default function AdminPage() {
       {/* ── Sidebar ── */}
       <AdminSidebar
         activeMenu={activeMenu}
-        onMenuClick={(id) => { setActiveMenu(id); setSidebarOpen(false) }}
+        onMenuClick={(id) => { 
+          if (id === 'keluar') {
+            setShowLogoutModal(true)
+            setSidebarOpen(false)
+          } else {
+            setActiveMenu(id)
+            setSidebarOpen(false)
+          }
+        }}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         unreadCount={unreadCount}
@@ -140,63 +162,36 @@ export default function AdminPage() {
 
           {/* ── Pesan Dibalas Menu Content ── */}
           {activeMenu === 'pesan-dibalas' && (
-            <div className="animate-fadeIn">
-              {/* Page Header */}
-              <div className="mb-8">
-                <h3 className="text-3xl font-extrabold text-[#111827] tracking-tight">
-                  Pesan Dibalas
-                </h3>
-                <p className="text-[#6b7280] text-[15px] mt-2 font-normal">
-                  Daftar pesan yang telah ditindaklanjuti
-                </p>
-              </div>
-              
-              <div className="flex flex-col items-center justify-center py-16 px-4 bg-white border border-gray-100 rounded-2xl text-center shadow-sm">
-                <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 border border-gray-100">
-                  <MessageSquareReply className="w-6 h-6 text-gray-400" />
-                </div>
-                <h4 className="text-base font-bold text-gray-800">Tidak Ada Pesan Dibalas</h4>
-                <p className="text-sm text-gray-400 mt-1 max-w-xs">
-                  Belum ada pesan yang ditandai sebagai dibalas saat ini.
-                </p>
-              </div>
-            </div>
+            <PesanDibalas messages={messages} />
           )}
 
-          {/* ── Keluar Menu Content ── */}
-          {activeMenu === 'keluar' && (
-            <div className="animate-fadeIn">
-              {/* Page Header */}
-              <div className="mb-8">
-                <h3 className="text-3xl font-extrabold text-[#111827] tracking-tight">
-                  Keluar
-                </h3>
-                <p className="text-[#6b7280] text-[15px] mt-2 font-normal">
-                  Sesi administrasi panel
-                </p>
-              </div>
-              
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-8 max-w-lg shadow-sm">
-                <h4 className="text-lg font-bold text-gray-900">Konfirmasi Keluar</h4>
-                <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+          {/* ── Keluar Modal ── */}
+          {showLogoutModal && createPortal(
+            <div className="fixed inset-0 w-[100vw] h-[100vh] z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/40 animate-fadeIn"
+                 onClick={(e) => { if (e.target === e.currentTarget) setShowLogoutModal(false) }}
+            >
+              <div className="bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl animate-scaleIn transform transition-all relative">
+                <h4 className="text-xl font-extrabold text-[#111827]">Konfirmasi Keluar</h4>
+                <p className="text-[14px] text-gray-500 mt-2 leading-relaxed">
                   Apakah Anda yakin ingin keluar dari sistem admin panel Green Banking? Sesi aktif Anda akan segera diakhiri.
                 </p>
                 <div className="flex items-center gap-3 mt-6">
                   <button 
                     onClick={() => window.location.href = '/'}
-                    className="h-11 px-6 rounded-xl bg-[#22c55e] text-white font-semibold text-sm hover:bg-[#16a34a] hover:shadow-lg hover:shadow-green-100 transition-all duration-300"
+                    className="flex-1 h-11 rounded-xl bg-[#22c55e] text-white font-bold text-sm hover:bg-[#16a34a] hover:shadow-lg hover:shadow-green-100 transition-all duration-300"
                   >
-                    Ya, Keluar Sesi
+                    Ya, Keluar
                   </button>
                   <button 
-                    onClick={() => setActiveMenu('pesan-masuk')}
-                    className="h-11 px-6 rounded-xl border border-gray-200 text-[#6b7280] hover:bg-gray-50 font-semibold text-sm transition-all duration-300"
+                    onClick={() => setShowLogoutModal(false)}
+                    className="flex-1 h-11 rounded-xl border border-gray-200 text-[#6b7280] font-semibold text-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
                   >
                     Batal
                   </button>
                 </div>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
 
         </main>

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Mail, Search, ChevronLeft, ChevronRight, X, Send, User, AtSign, Building2, MessageSquare, Calendar } from 'lucide-react'
 
 const ITEMS_PER_PAGE = 3
@@ -40,15 +41,15 @@ function MessageModal({ msg, onClose, onToggleRead, onSendReply }) {
     }, 1500)
   }
 
-  return (
+  return createPortal(
     // Backdrop
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/40 animate-fadeIn"
+      className="fixed inset-0 w-[100vw] h-[100vh] z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/40 animate-fadeIn"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       {/* Modal card — fixed height structure so footer never gets cut */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col animate-scaleIn"
-        style={{ maxHeight: 'min(92vh, 640px)' }}
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col animate-scaleIn transform transition-all"
+        style={{ maxHeight: 'min(90vh, 600px)' }}
       >
 
         {/* ── Header ── */}
@@ -134,8 +135,8 @@ function MessageModal({ msg, onClose, onToggleRead, onSendReply }) {
           </button>
         </div>
       </div>
-    </div>
-
+    </div>,
+    document.body
   )
 }
 
