@@ -1,7 +1,12 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { contactApi } from '../services/api'
 
 export default function ContactForm() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  
   const [form, setForm] = useState({ nama: '', email: '', organisasi: '', pesan: '' })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
@@ -12,6 +17,11 @@ export default function ContactForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    if (!user) {
+      navigate('/login')
+      return
+    }
     setLoading(true)
     setError('')
     setSuccess('')

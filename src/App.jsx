@@ -6,6 +6,7 @@ import LandingPage from './pages/LandingPage'
 import AdminPage from './pages/AdminPage'
 import PesanMasuk from './components/admin/PesanMasuk'
 import PesanDibalas from './components/admin/PesanDibalas'
+import ProfilePage from './pages/ProfilePage'
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/pesan-masuk" element={<PesanMasuk />} />
           <Route path="/pesan-dibalas" element={<PesanDibalas />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

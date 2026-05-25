@@ -14,8 +14,12 @@ export default function Navbar() {
   }
 
   const scrollTo = (id) => {
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
+    if (window.location.pathname !== '/') {
+      navigate('/#' + id)
+    } else {
+      const el = document.getElementById(id)
+      if (el) el.scrollIntoView({ behavior: 'smooth' })
+    }
     setMenuOpen(false)
   }
 
@@ -55,8 +59,11 @@ export default function Navbar() {
               </button>
               {profileOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2">
-                  <p className="px-4 py-2 text-xs text-gray-400">{user.name}</p>
+                  <p className="px-4 py-2 text-xs text-gray-400 font-semibold">{user.name}</p>
                   <hr className="my-1 border-gray-100" />
+                  <Link to="/profile" className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600 transition-colors">
+                    Profil Saya
+                  </Link>
                   <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors">
                     Logout
                   </button>

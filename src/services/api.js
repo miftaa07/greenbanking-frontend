@@ -66,4 +66,11 @@ export const contactApi = {
   send: (data) => api.post('/api/contact', data),
 }
 
+// =====================================================
+// Profile API
+// =====================================================
+export const profileApi = {
+  update: (data) => api.put('/api/profile/update', data),
+}
+
 export default api

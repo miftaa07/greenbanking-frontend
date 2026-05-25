@@ -55,7 +55,19 @@ const footerLinks = {
   Dukungan: ['FAQ', 'Panduan', 'Kebijakan', 'Kontak Tim'],
 }
 
+import { useEffect } from 'react'
+
 export default function LandingPage() {
+  useEffect(() => {
+    if (window.location.hash) {
+      const id = window.location.hash.substring(1)
+      setTimeout(() => {
+        const el = document.getElementById(id)
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+    }
+  }, [])
+
   const scrollTo = (id) => {
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth' })

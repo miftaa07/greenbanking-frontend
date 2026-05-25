@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { Menu, MessageSquare, BookOpen, MessageSquareReply, Users } from 'lucide-react'
 import AdminSidebar from '../components/admin/AdminSidebar'
 import StatCard from '../components/admin/StatCard'
@@ -15,9 +17,22 @@ const stats = [
 ]
 
 export default function AdminPage() {
+  const { logout } = useAuth()
+  const navigate = useNavigate()
+  
   const [activeMenu, setActiveMenu] = useState('dashboard') // Set Dashboard as default active menu
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (error) {
+      console.error('Logout failed', error)
+    } finally {
+      navigate('/login')
+    }
+  }
   
   // Prevent body scroll when logout modal is open
   useEffect(() => {
@@ -177,7 +192,7 @@ export default function AdminPage() {
                 </p>
                 <div className="flex items-center gap-3 mt-6">
                   <button 
-                    onClick={() => window.location.href = '/'}
+                    onClick={handleLogout}
                     className="flex-1 h-11 rounded-xl bg-[#22c55e] text-white font-bold text-sm hover:bg-[#16a34a] hover:shadow-lg hover:shadow-green-100 transition-all duration-300"
                   >
                     Ya, Keluar
