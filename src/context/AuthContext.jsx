@@ -1,68 +1,92 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { authApi } from '../services/api'
 
-// Buat context untuk auth (biar bisa dipakai global)
+// Context untuk authentication — dipakai global di seluruh app
 const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
-  // State untuk simpan user & loading
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Cek apakah user sudah login (dari localStorage)
+  // Cek localStorage saat pertama kali load
   useEffect(() => {
-    const savedUser = localStorage.getItem('user')
-    const token = localStorage.getItem('auth_token')
+    const loadUser = () => {
+      try {
+        const savedUser = localStorage.getItem('user')
+        const token = localStorage.getItem('auth_token')
 
-    if (savedUser && token) {
-      setUser(JSON.parse(savedUser)) // set user dari localStorage
+        if (savedUser && token) {
+          setUser(JSON.parse(savedUser))
+        }
+      } catch (err) {
+        // Jika data corrupt, bersihkan
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user')
+      } finally {
+        setLoading(false)
+      }
     }
 
-    setLoading(false) // selesai loading
+    loadUser()
   }, [])
 
-  // FUNCTION LOGIN
+  // =====================
+  // LOGIN
+  // =====================
   const login = async (email, password) => {
     const response = await authApi.login({ email, password })
+    const { user: userData, token } = response.data
 
-    const { user, token } = response.data
-
-    // Simpan token & user ke localStorage
+    // Simpan ke localStorage
     localStorage.setItem('auth_token', token)
-    localStorage.setItem('user', JSON.stringify(user))
+    localStorage.setItem('user', JSON.stringify(userData))
 
-    setUser(user) // update state
+    // Update state
+    setUser(userData)
+
     return response.data
   }
 
-  // FUNCTION REGISTER
+  // =====================
+  // REGISTER
+  // =====================
   const register = async (name, email, password, password_confirmation) => {
-    const response = await authApi.register({ name, email, password, password_confirmation })
+    const response = await authApi.register({
+      name,
+      email,
+      password,
+      password_confirmation,
+    })
+    const { user: userData, token } = response.data
 
-    const { user, token } = response.data
-
-    // Simpan token & user
+    // Simpan ke localStorage
     localStorage.setItem('auth_token', token)
-    localStorage.setItem('user', JSON.stringify(user))
+    localStorage.setItem('user', JSON.stringify(userData))
 
-    setUser(user)
+    // Update state
+    setUser(userData)
+
     return response.data
   }
 
-  // FUNCTION LOGOUT
+  // =====================
+  // LOGOUT
+  // =====================
   const logout = async () => {
     try {
-      await authApi.logout() // request ke backend
-    } catch (err) {}
+      await authApi.logout()
+    } catch (err) {
+      // Tetap logout di frontend meskipun backend error
+    }
 
-    // Hapus data dari localStorage
+    // Hapus dari localStorage
     localStorage.removeItem('auth_token')
     localStorage.removeItem('user')
 
-    setUser(null) // reset user
+    // Reset state
+    setUser(null)
   }
 
-  // Provider supaya bisa dipakai di seluruh app
   return (
     <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
@@ -70,12 +94,11 @@ export const AuthProvider = ({ children }) => {
   )
 }
 
-// Custom hook biar gampang dipakai
+// Custom hook — useAuth()
 export const useAuth = () => {
   const context = useContext(AuthContext)
-
-  // Error kalau dipakai di luar AuthProvider
-  if (!context) throw new Error('useAuth must be used within AuthProvider')
-
+  if (!context) {
+    throw new Error('useAuth harus digunakan di dalam AuthProvider')
+  }
   return context
 }

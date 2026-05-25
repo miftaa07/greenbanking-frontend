@@ -1,60 +1,69 @@
 import axios from 'axios'
 
-// Base URL backend Laravel
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+// =====================================================
+// Axios Instance — GreenBanking API
+// =====================================================
+// Menggunakan Vite proxy (/api → http://localhost:8000)
+// Sehingga baseURL cukup kosong, request akan ke /api/*
+// =====================================================
 
-// Buat instance axios (biar config sama semua request)
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: '', // Kosong karena Vite proxy handle /api/*
   headers: {
-    'Content-Type': 'application/json', // kirim data JSON
-    'Accept': 'application/json',       // minta response JSON
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
-  withCredentials: true, // penting kalau pakai cookie (Sanctum)
 })
 
-// Interceptor request: otomatis tambahin token ke header
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token')
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}` // kirim token
-  }
-
-  return config
-})
-
-// Interceptor response: handle error dari server
-api.interceptors.response.use(
-  (response) => response, // kalau sukses langsung lanjut
-  (error) => {
-
-    // Kalau token tidak valid / belum login
-    if (error.response?.status === 401) {
-      localStorage.removeItem('auth_token') // hapus token
-      localStorage.removeItem('user')       // hapus user
-      window.location.href = '/login'       // redirect ke login
+// =====================================================
+// Request Interceptor — Auto-attach Bearer Token
+// =====================================================
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
     }
+    return config
+  },
+  (error) => Promise.reject(error)
+)
 
-    return Promise.reject(error) // tetap lempar error
+// =====================================================
+// Response Interceptor — Handle 401 Unauthorized
+// =====================================================
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('user')
+
+      // Hanya redirect jika bukan di halaman login/register
+      const path = window.location.pathname
+      if (path !== '/login' && path !== '/register') {
+        window.location.href = '/login'
+      }
+    }
+    return Promise.reject(error)
   }
 )
 
-// =====================
+// =====================================================
 // Auth API
-// =====================
+// =====================================================
 export const authApi = {
-  login: (data) => api.post('/api/login', data),     // login user
-  register: (data) => api.post('/api/register', data), // register user
-  logout: () => api.post('/api/logout'),             // logout user
-  getUser: () => api.get('/api/user'),               // ambil data user
+  register: (data) => api.post('/api/register', data),
+  login: (data) => api.post('/api/login', data),
+  logout: () => api.post('/api/logout'),
+  getUser: () => api.get('/api/user'),
 }
 
-// =====================
+// =====================================================
 // Contact API
-// =====================
+// =====================================================
 export const contactApi = {
-  send: (data) => api.post('/api/contact', data), // kirim pesan contact
+  send: (data) => api.post('/api/contact', data),
 }
 
 export default api
