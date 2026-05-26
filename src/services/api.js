@@ -71,6 +71,7 @@ export const contactApi = {
 // =====================================================
 export const profileApi = {
   update: (data) => api.put('/api/profile/update', data),
+  getMessages: () => api.get('/api/profile/messages'),
 }
 
 export default api
