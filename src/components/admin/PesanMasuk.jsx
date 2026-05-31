@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Mail, Search, ChevronLeft, ChevronRight, X, Send, User, AtSign, Building2, MessageSquare, Calendar } from 'lucide-react'
 
-const ITEMS_PER_PAGE = 3
+const ITEMS_PER_PAGE = 5
 
 const FILTERS = [
   { id: 'semua', label: 'Semua' },
@@ -252,17 +252,15 @@ export default function PesanMasuk({ messages = [], onToggleRead, onSendReply, i
             <button
               key={f.id}
               onClick={() => handleFilterChange(f.id)}
-              className={`h-11 px-5 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                activeFilter === f.id
+              className={`h-11 px-5 rounded-xl font-semibold text-sm transition-all duration-300 ${activeFilter === f.id
                   ? 'bg-[#22c55e] text-white shadow-lg shadow-green-100'
                   : 'bg-white border border-gray-200 text-[#6b7280] hover:bg-green-50 hover:text-[#22c55e] hover:border-green-200'
-              }`}
+                }`}
             >
               {f.label}
               {f.id === 'semua' && (
-                <span className={`ml-2 text-[11px] font-bold px-1.5 py-0.5 rounded-md ${
-                  activeFilter === f.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
-                }`}>
+                <span className={`ml-2 text-[11px] font-bold px-1.5 py-0.5 rounded-md ${activeFilter === f.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
+                  }`}>
                   {messages.length}
                 </span>
               )}
@@ -320,11 +318,10 @@ export default function PesanMasuk({ messages = [], onToggleRead, onSendReply, i
             <div
               key={msg.id}
               onClick={() => handleCardClick(msg)}
-              className={`group border rounded-2xl p-6 md:p-7 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-md ${
-                msg.unread
+              className={`group border rounded-2xl p-6 md:p-7 cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-md ${msg.unread
                   ? 'bg-[#ecfdf5] border-green-200/90 shadow-sm shadow-green-50/50'
                   : 'bg-white border-gray-200/80'
-              }`}
+                }`}
             >
               <div className="flex flex-col md:flex-row justify-between items-start gap-3">
                 <div className="flex-1 min-w-0">
@@ -371,10 +368,10 @@ export default function PesanMasuk({ messages = [], onToggleRead, onSendReply, i
             {searchQuery
               ? `Tidak ada pesan yang cocok dengan "${searchQuery}".`
               : activeFilter === 'belum-dibaca'
-              ? 'Semua pesan masuk sudah Anda baca.'
-              : activeFilter === 'sudah-dibaca'
-              ? 'Belum ada pesan yang dibaca saat ini.'
-              : 'Belum ada pesan masuk dari pengunjung website.'}
+                ? 'Semua pesan masuk sudah Anda baca.'
+                : activeFilter === 'sudah-dibaca'
+                  ? 'Belum ada pesan yang dibaca saat ini.'
+                  : 'Belum ada pesan masuk dari pengunjung website.'}
           </p>
           {searchQuery && (
             <button onClick={clearSearch} className="mt-4 text-sm text-[#22c55e] font-semibold hover:underline">
@@ -407,11 +404,10 @@ export default function PesanMasuk({ messages = [], onToggleRead, onSendReply, i
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`h-9 w-9 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                  page === safePage
+                className={`h-9 w-9 rounded-xl text-sm font-semibold transition-all duration-200 ${page === safePage
                     ? 'bg-[#22c55e] text-white shadow-md shadow-green-100'
                     : 'border border-gray-200 text-[#6b7280] hover:bg-green-50 hover:border-green-200 hover:text-[#22c55e]'
-                }`}
+                  }`}
               >
                 {page}
               </button>
