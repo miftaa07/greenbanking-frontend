@@ -74,4 +74,12 @@ export const profileApi = {
   getMessages: () => api.get('/api/profile/messages'),
 }
 
+// =====================================================
+// Admin API
+// =====================================================
+export const adminApi = {
+  getMessages: () => api.get('/api/admin/messages'),
+  markAsRead: (id) => api.put(`/api/admin/messages/${id}/read`),
+}
+
 export default api

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { adminApi } from '../services/api'
 import { Menu, MessageSquare, BookOpen, MessageSquareReply, Users } from 'lucide-react'
 import AdminSidebar from '../components/admin/AdminSidebar'
 import StatCard from '../components/admin/StatCard'
@@ -44,52 +45,56 @@ export default function AdminPage() {
     return () => { document.body.style.overflow = '' }
   }, [showLogoutModal])
   
-  // Dummy messages state to handle interactive read status
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      name: "Dr. Ahmad Santoso",
-      university: "Universitas Indonesia",
-      email: "ahmad.santosos@univ.ac.id",
-      message: "Saya tertarik untuk berkolaborasi dalam penelitian serupa. Apakah data penelitian ini bisa diakses untuk tujuan akademik?",
-      date: "2024-03-25 10:30",
-      replied: true,
-      replyMessage: "Terima kasih atas pertanyaannya..."
-    },
-    {
-      id: 2,
-      name: "Prof. Budi Rahardjo",
-      university: "Institut Teknologi Bandung",
-      email: "budi.rahardjo@itb.ac.id",
-      message: "Bagaimana mekanisme integrasi API Green Banking untuk sistem pembayaran kampus kami yang ramah lingkungan?",
-      date: "2024-03-24 15:45",
-      unread: false
-    },
-    {
-      id: 3,
-      name: "Citra Lestari, M.Si",
-      university: "Universitas Gadjah Mada",
-      email: "citra.lestari@ugm.ac.id",
-      message: "Apakah ada program magang atau kerjasama penelitian bagi mahasiswa pascasarjana di bidang Eco-Finance?",
-      date: "2024-03-23 09:15",
-      unread: false
-    },
-    {
-      id: 4,
-      name: "Ir. H. Dian Wijaya",
-      university: "Universitas Diponegoro",
-      email: "dian.wijaya@undip.ac.id",
-      message: "Kami sedang merancang kurikulum baru tentang Green Economy. Apakah tim Green Banking bersedia menjadi pembicara tamu?",
-      date: "2024-03-22 14:20",
-      unread: false
+  // Data asil dari API
+  const [messages, setMessages] = useState([])
+  const [loadingMessages, setLoadingMessages] = useState(false)
+  const [errorMessages, setErrorMessages] = useState(null)
+
+  // Fetch messages from backend
+  const fetchMessages = async () => {
+    setLoadingMessages(true)
+    setErrorMessages(null)
+    try {
+      const response = await adminApi.getMessages()
+      if (response.data && response.data.success) {
+        // Map data dari backend ke format UI
+        const mapped = response.data.data.map(msg => ({
+          id: msg.id,
+          name: msg.nama,
+          university: msg.subjek || 'Umum',
+          email: msg.email,
+          message: msg.isi_pesan,
+          date: new Date(msg.created_at).toLocaleString('id-ID', {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          }),
+          unread: !msg.is_read
+        }))
+        setMessages(mapped)
+      }
+    } catch (err) {
+      console.error('Failed to fetch messages', err)
+      setErrorMessages('Gagal memuat pesan. Silakan coba lagi nanti.')
+    } finally {
+      setLoadingMessages(false)
     }
-  ])
+  }
+
+  // Load messages when component mounts or activeMenu changes to relevant tabs
+  useEffect(() => {
+    fetchMessages()
+  }, [])
 
   // Mark message as read
-  const handleToggleRead = (id) => {
-    setMessages((prev) =>
-      prev.map((msg) => (msg.id === id ? { ...msg, unread: false } : msg))
-    )
+  const handleToggleRead = async (id) => {
+    try {
+      await adminApi.markAsRead(id)
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === id ? { ...msg, unread: false } : msg))
+      )
+    } catch (err) {
+      console.error('Failed to mark as read', err)
+    }
   }
 
   // Calculate dynamic unread count
@@ -172,6 +177,8 @@ export default function AdminPage() {
             <PesanMasuk
               messages={messages}
               onToggleRead={handleToggleRead}
+              isLoading={loadingMessages}
+              error={errorMessages}
             />
           )}
 

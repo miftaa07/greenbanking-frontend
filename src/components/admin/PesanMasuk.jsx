@@ -176,7 +176,7 @@ function HighlightText({ text, query }) {
 }
 
 // ── Main Component ──
-export default function PesanMasuk({ messages, onToggleRead }) {
+export default function PesanMasuk({ messages = [], onToggleRead, isLoading, error }) {
   const [activeFilter, setActiveFilter] = useState('semua')
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -298,7 +298,22 @@ export default function PesanMasuk({ messages, onToggleRead }) {
       )}
 
       {/* ── Message list ── */}
-      {paginated.length > 0 ? (
+      {isLoading ? (
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="border border-gray-100 rounded-2xl p-6 md:p-7 bg-white animate-pulse">
+              <div className="h-5 bg-gray-200 rounded w-1/4 mb-3"></div>
+              <div className="h-4 bg-gray-100 rounded w-1/3 mb-4"></div>
+              <div className="h-4 bg-gray-50 rounded w-full mb-2"></div>
+              <div className="h-4 bg-gray-50 rounded w-5/6"></div>
+            </div>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-medium text-sm text-center">
+          {error}
+        </div>
+      ) : paginated.length > 0 ? (
         <div className="space-y-4">
           {paginated.map((msg) => (
             <div
