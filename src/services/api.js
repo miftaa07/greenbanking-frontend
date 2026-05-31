@@ -78,8 +78,10 @@ export const profileApi = {
 // Admin API
 // =====================================================
 export const adminApi = {
+  getStats: () => api.get('/api/admin/stats'),
   getMessages: () => api.get('/api/admin/messages'),
   markAsRead: (id) => api.put(`/api/admin/messages/${id}/read`),
+  replyMessage: (id, text) => api.post(`/api/admin/messages/${id}/reply`, { isi_balasan: text }),
 }
 
 export default api

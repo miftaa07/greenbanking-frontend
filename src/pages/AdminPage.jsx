@@ -50,6 +50,24 @@ export default function AdminPage() {
   const [loadingMessages, setLoadingMessages] = useState(false)
   const [errorMessages, setErrorMessages] = useState(null)
 
+  const [statsData, setStatsData] = useState(null)
+  const [loadingStats, setLoadingStats] = useState(false)
+
+  // Fetch stats from backend
+  const fetchStats = async () => {
+    setLoadingStats(true)
+    try {
+      const response = await adminApi.getStats()
+      if (response.data && response.data.success) {
+        setStatsData(response.data.data)
+      }
+    } catch (err) {
+      console.error('Failed to fetch stats', err)
+    } finally {
+      setLoadingStats(false)
+    }
+  }
+
   // Fetch messages from backend
   const fetchMessages = async () => {
     setLoadingMessages(true)
@@ -68,7 +86,9 @@ export default function AdminPage() {
             year: 'numeric', month: 'short', day: 'numeric',
             hour: '2-digit', minute: '2-digit'
           }),
-          unread: !msg.is_read
+          unread: !msg.is_read,
+          replied: !!msg.balasan,
+          replyMessage: msg.balasan ? msg.balasan.isi_balasan : null
         }))
         setMessages(mapped)
       }
@@ -83,6 +103,7 @@ export default function AdminPage() {
   // Load messages when component mounts or activeMenu changes to relevant tabs
   useEffect(() => {
     fetchMessages()
+    fetchStats()
   }, [])
 
   // Mark message as read
@@ -92,8 +113,26 @@ export default function AdminPage() {
       setMessages((prev) =>
         prev.map((msg) => (msg.id === id ? { ...msg, unread: false } : msg))
       )
+      // Refresh stats
+      fetchStats()
     } catch (err) {
       console.error('Failed to mark as read', err)
+    }
+  }
+
+  // Handle send reply
+  const handleSendReply = async (id, text) => {
+    try {
+      const response = await adminApi.replyMessage(id, text)
+      if (response.data && response.data.success) {
+        setMessages((prev) =>
+          prev.map((msg) => (msg.id === id ? { ...msg, replied: true, replyMessage: text } : msg))
+        )
+        // Refresh stats
+        fetchStats()
+      }
+    } catch (err) {
+      console.error('Failed to send reply', err)
     }
   }
 
@@ -157,18 +196,28 @@ export default function AdminPage() {
 
               {/* Stat Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                {stats.map((stat) => (
-                  <StatCard
-                    key={stat.id}
-                    icon={stat.icon}
-                    value={stat.id === 2 ? unreadCount.toString() : stat.value}
-                    label={stat.label}
-                  />
-                ))}
+                {stats.map((stat) => {
+                  let dynamicValue = stat.value;
+                  if (statsData) {
+                    if (stat.id === 1) dynamicValue = statsData.total_pesan.toString();
+                    if (stat.id === 2) dynamicValue = statsData.pesan_belum_dibaca.toString();
+                    if (stat.id === 3) dynamicValue = statsData.pesan_sudah_dibalas.toString();
+                    if (stat.id === 4) dynamicValue = statsData.pengunjung_bulan_ini.toLocaleString('id-ID');
+                  }
+                  
+                  return (
+                    <StatCard
+                      key={stat.id}
+                      icon={stat.icon}
+                      value={loadingStats || !statsData ? '...' : dynamicValue}
+                      label={stat.label}
+                    />
+                  );
+                })}
               </div>
 
               {/* Recent Activity */}
-              <ActivityList />
+              <ActivityList messages={messages} isLoading={loadingMessages} />
             </div>
           )}
 
@@ -177,6 +226,7 @@ export default function AdminPage() {
             <PesanMasuk
               messages={messages}
               onToggleRead={handleToggleRead}
+              onSendReply={handleSendReply}
               isLoading={loadingMessages}
               error={errorMessages}
             />
@@ -184,7 +234,11 @@ export default function AdminPage() {
 
           {/* ── Pesan Dibalas Menu Content ── */}
           {activeMenu === 'pesan-dibalas' && (
-            <PesanDibalas messages={messages} />
+            <PesanDibalas 
+              messages={messages} 
+              isLoading={loadingMessages}
+              error={errorMessages}
+            />
           )}
 
           {/* ── Keluar Modal ── */}

@@ -25,7 +25,7 @@ function HighlightText({ text, query }) {
   )
 }
 
-export default function PesanDibalas({ messages }) {
+export default function PesanDibalas({ messages = [], isLoading, error }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedMsg, setSelectedMsg] = useState(null)
@@ -116,53 +116,70 @@ export default function PesanDibalas({ messages }) {
       )}
 
       {/* List */}
-      <div className="space-y-4">
-        {paginated.map((msg) => (
-          <div
-            key={msg.id}
-            onClick={() => setSelectedMsg(msg)}
-            className="
-              bg-white border border-gray-200
-              rounded-2xl p-6 cursor-pointer
-              hover:-translate-y-1 hover:shadow-md
-              transition-all duration-300
-            "
-          >
-            <div className="flex justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-[#111827]">
-                    <HighlightText text={msg.name} query={searchQuery} />
-                  </h4>
-
-                  <span className="
-                    text-[10px] font-bold uppercase
-                    bg-green-100 text-green-600
-                    px-2 py-1 rounded-full
-                  ">
-                    Sudah Dibalas
-                  </span>
-                </div>
-
-                <p className="text-sm text-gray-500 mt-1">
-                  <HighlightText text={msg.university} query={searchQuery} /> • <HighlightText text={msg.email} query={searchQuery} />
-                </p>
-
-                <p className="text-sm text-gray-600 mt-3 line-clamp-2">
-                  <HighlightText text={msg.message} query={searchQuery} />
-                </p>
-              </div>
-
-              <span className="text-sm text-gray-400 flex-shrink-0">
-                {msg.date}
-              </span>
+      {isLoading ? (
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="border border-gray-100 rounded-2xl p-6 md:p-7 bg-white animate-pulse">
+              <div className="h-5 bg-gray-200 rounded w-1/4 mb-3"></div>
+              <div className="h-4 bg-gray-100 rounded w-1/3 mb-4"></div>
+              <div className="h-4 bg-gray-50 rounded w-full mb-2"></div>
+              <div className="h-4 bg-gray-50 rounded w-5/6"></div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-medium text-sm text-center">
+          {error}
+        </div>
+      ) : paginated.length > 0 ? (
+        <div className="space-y-4">
+          {paginated.map((msg) => (
+            <div
+              key={msg.id}
+              onClick={() => setSelectedMsg(msg)}
+              className="
+                bg-white border border-gray-200
+                rounded-2xl p-6 cursor-pointer
+                hover:-translate-y-1 hover:shadow-md
+                transition-all duration-300
+              "
+            >
+              <div className="flex justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-[#111827]">
+                      <HighlightText text={msg.name} query={searchQuery} />
+                    </h4>
+  
+                    <span className="
+                      text-[10px] font-bold uppercase
+                      bg-green-100 text-green-600
+                      px-2 py-1 rounded-full
+                    ">
+                      Sudah Dibalas
+                    </span>
+                  </div>
+  
+                  <p className="text-sm text-gray-500 mt-1">
+                    <HighlightText text={msg.university} query={searchQuery} /> • <HighlightText text={msg.email} query={searchQuery} />
+                  </p>
+  
+                  <p className="text-sm text-gray-600 mt-3 line-clamp-2">
+                    <HighlightText text={msg.message} query={searchQuery} />
+                  </p>
+                </div>
+  
+                <span className="text-sm text-gray-400 flex-shrink-0">
+                  {msg.date}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
 
       {/* Empty State */}
-      {filteredMessages.length === 0 && (
+      {!isLoading && !error && filteredMessages.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 px-4 bg-white border border-gray-100 rounded-2xl text-center">
           <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 border border-gray-100">
             {searchQuery ? <Search className="w-6 h-6 text-gray-400" /> : <MessageSquareReply className="w-6 h-6 text-gray-400" />}

@@ -176,7 +176,7 @@ function HighlightText({ text, query }) {
 }
 
 // ── Main Component ──
-export default function PesanMasuk({ messages = [], onToggleRead, isLoading, error }) {
+export default function PesanMasuk({ messages = [], onToggleRead, onSendReply, isLoading, error }) {
   const [activeFilter, setActiveFilter] = useState('semua')
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -217,9 +217,10 @@ export default function PesanMasuk({ messages = [], onToggleRead, isLoading, err
   // Open modal and mark as read
   const handleCardClick = (msg) => setSelectedMsg(msg)
 
-  const handleSendReply = (id, text) => {
-    // In a real app, send to backend here
-    console.log(`Reply to message ${id}:`, text)
+  const handleSendReplyLocal = (id, text) => {
+    if (onSendReply) {
+      onSendReply(id, text)
+    }
   }
 
   return (
@@ -231,7 +232,7 @@ export default function PesanMasuk({ messages = [], onToggleRead, isLoading, err
           msg={selectedMsg}
           onClose={() => setSelectedMsg(null)}
           onToggleRead={onToggleRead}
-          onSendReply={handleSendReply}
+          onSendReply={handleSendReplyLocal}
         />
       )}
 
