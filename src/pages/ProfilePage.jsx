@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Navbar from '../components/Navbar'
-import ProfileHeader from '../components/profile/ProfileHeader'
 import ProfileInfo from '../components/profile/ProfileInfo'
 import EditProfileForm from '../components/profile/EditProfileForm'
 import MessageHistory from '../components/profile/MessageHistory'
@@ -33,9 +32,6 @@ export default function ProfilePage() {
       
       <main className="pt-24 pb-16 px-6 lg:px-10 max-w-6xl mx-auto">
         <div className="space-y-6">
-          {/* Header Section */}
-          <ProfileHeader user={user} />
-
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             
