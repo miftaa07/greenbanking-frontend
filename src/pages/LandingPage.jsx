@@ -243,9 +243,9 @@ export default function LandingPage() {
                   <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <Tooltip
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', fontSize: '12px' }}
-                    cursor={{ fill: 'rgba(34,197,94,0.05)' }}
+                    cursor={{ fill: 'rgba(16,185,129,0.05)' }}
                   />
-                  <Bar dataKey="adopsi" fill="#22c55e" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="adopsi" fill="#10B981" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
               <p className="text-xs text-gray-400 mt-3 flex items-center gap-1">
@@ -286,7 +286,7 @@ export default function LandingPage() {
                   <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', fontSize: '12px' }} />
-                  <Bar dataKey="adopsi" fill="#22c55e" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="adopsi" fill="#10B981" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -304,7 +304,7 @@ export default function LandingPage() {
                   <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', fontSize: '12px' }} />
                   <Legend wrapperStyle={{ fontSize: '11px' }} />
-                  <Line type="monotone" dataKey="positif" stroke="#22c55e" strokeWidth={2.5} dot={{ fill: '#22c55e', r: 4 }} />
+                  <Line type="monotone" dataKey="positif" stroke="#10B981" strokeWidth={2.5} dot={{ fill: '#10B981', r: 4 }} />
                   <Line type="monotone" dataKey="negatif" stroke="#f87171" strokeWidth={2.5} dot={{ fill: '#f87171', r: 4 }} />
                   <Line type="monotone" dataKey="netral"  stroke="#94a3b8" strokeWidth={2.5} dot={{ fill: '#94a3b8', r: 4 }} />
                 </LineChart>
