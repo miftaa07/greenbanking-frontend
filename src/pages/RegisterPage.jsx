@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { Leaf } from 'lucide-react'
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '', password_confirmation: '' })
@@ -37,11 +38,10 @@ export default function RegisterPage() {
         <div className="bg-white rounded-3xl shadow-md px-10 py-10">
           <div className="flex justify-center mb-5">
             <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <svg className="w-9 h-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-              </svg>
+              <Leaf className="w-9 h-9 text-white" strokeWidth={2.2} />
             </div>
           </div>
+
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-gray-900 font-serif">Buat Akun</h1>
             <p className="text-gray-500 text-sm mt-1">Daftarkan diri Anda untuk memulai</p>

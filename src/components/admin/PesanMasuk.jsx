@@ -182,13 +182,15 @@ export default function PesanMasuk({ messages = [], onToggleRead, onSendReply, i
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedMsg, setSelectedMsg] = useState(null)
 
-  // 1. Filter by tab
+  // 1. Filter by replied status (only show unreplied) and active tab
   const tabFiltered = useMemo(() =>
-    messages.filter((msg) => {
-      if (activeFilter === 'belum-dibaca') return msg.unread
-      if (activeFilter === 'sudah-dibaca') return !msg.unread
-      return true
-    }), [messages, activeFilter])
+    messages
+      .filter((msg) => !msg.replied)
+      .filter((msg) => {
+        if (activeFilter === 'belum-dibaca') return msg.unread
+        if (activeFilter === 'sudah-dibaca') return !msg.unread
+        return true
+      }), [messages, activeFilter])
 
   // 2. Filter by search
   const searchFiltered = useMemo(() => {
@@ -261,7 +263,7 @@ export default function PesanMasuk({ messages = [], onToggleRead, onSendReply, i
               {f.id === 'semua' && (
                 <span className={`ml-2 text-[11px] font-bold px-1.5 py-0.5 rounded-md ${activeFilter === f.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
                   }`}>
-                  {messages.length}
+                  {messages.filter((msg) => !msg.replied).length}
                 </span>
               )}
             </button>
