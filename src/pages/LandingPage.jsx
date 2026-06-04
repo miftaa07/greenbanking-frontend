@@ -26,7 +26,7 @@ const lineData = [
 const stats = [
   { value: '85%',   label: 'Dampak Farming Positif', icon: '📊' },
   { value: '42%',   label: 'Peningkatan Adopsi',     icon: '📈' },
-  { value: '1.200+', label: 'Peserta Survei',         icon: '👥' },
+  { value: '200+', label: 'Peserta Survei',         icon: '👥' },
   { value: '5',     label: 'Negara Diteliti',         icon: '🌍' },
 ]
 

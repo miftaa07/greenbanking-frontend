@@ -32,7 +32,7 @@ export default function ProfileInfo({ user }) {
           </h1>
           <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-100">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-            Active Member
+            Active 
           </div>
         </div>
       </div>
